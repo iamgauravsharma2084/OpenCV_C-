@@ -1,0 +1,111 @@
+#include <opencv2/opencv.hpp>   // OpenCV library (camera, video, image processing)
+#include <iostream>             // Input-output (cout, endl)
+
+using namespace cv;             // cv:: likhne ki zarurat nahi
+using namespace std;            // std:: likhne ki zarurat nahi
+
+// Function jo video record karega
+void RecordVideoDesktop()
+{
+    VideoCapture cap(0);   // 0 = default webcam open
+
+    // Check camera open hua ya nahi
+    if (!cap.isOpened()) {
+        cout << "Camera not opened!" << endl;
+        return;            // agar nahi khula to function exit
+    }
+
+    int fps = 30;          // video ke frames per second
+    int frameCount = 0;    // total recorded frames count
+    bool isRecording = false; // recording ON/OFF flag
+
+    // Camera ka width aur height lena
+    int width = cap.get(CAP_PROP_FRAME_WIDTH);
+    int height = cap.get(CAP_PROP_FRAME_HEIGHT);
+
+    // Video save hone ka path
+    string filePath = "C:\\Users\\Gaurav\\Desktop\\output.avi";
+
+    VideoWriter writer;   // video likhne (save karne) ke liye object
+    Mat frame;            // har frame ka data store karega
+
+    cout << "Press S = Start | E = Stop | ESC = Exit" << endl;
+
+    // Infinite loop (jab tak user exit nahi kare)
+    while (true)
+    {
+        cap >> frame;      // camera se ek frame capture karo
+
+        // agar frame empty hai to break (camera issue)
+        if (frame.empty()) break;
+
+        // agar recording ON hai
+        if (isRecording)
+        {
+            frameCount++;   // frame count badhao
+
+            int seconds = frameCount / fps;  // total seconds calculate
+
+            // screen pe dikhane ke liye text
+            string text = "REC " + to_string(seconds) + " sec";
+
+            // frame par text draw karna
+            putText(frame, text, Point(30, 50),
+                FONT_HERSHEY_SIMPLEX, 1,
+                Scalar(0, 0, 255), 2); // red color
+
+            writer.write(frame); // frame ko video file me save karo
+        }
+
+        // camera window me frame show karo
+        imshow("Camera", frame);
+
+        char key = waitKey(1);  // keyboard input lo
+
+        // ================= START RECORDING =================
+        if ((key == 's' || key == 'S') && !isRecording)
+        {
+            cout << "Recording Started..." << endl;
+
+            // VideoWriter open karo (file create)
+            writer.open(filePath,
+                VideoWriter::fourcc('M', 'J', 'P', 'G'), // codec
+                fps,
+                Size(width, height)); // video size
+
+            // check writer open hua ya nahi
+            if (!writer.isOpened()) {
+                cout << "Error opening VideoWriter!" << endl;
+                return;
+            }
+
+            isRecording = true; // recording ON
+            frameCount = 0;     // counter reset
+        }
+
+        // ================= STOP RECORDING =================
+        if ((key == 'e' || key == 'E') && isRecording)
+        {
+            cout << "Recording Stopped!" << endl;
+
+            isRecording = false; // recording OFF
+            writer.release();    // file close (save)
+        }
+
+        // ================= EXIT =================
+        if (key == 27) break; // ESC key (27 ASCII)
+    }
+
+    cap.release();       // camera release
+    writer.release();    // writer release (safety)
+    destroyAllWindows(); // sab windows band
+
+    cout << "Video saved at: " << filePath << endl;
+}
+
+// Program ka entry point
+int main()
+{
+    RecordVideoDesktop(); // function call
+    return 0;             // program end
+}
