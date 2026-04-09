@@ -1,0 +1,88 @@
+#include <opencv2/opencv.hpp>
+using namespace cv;
+
+int main() {
+
+  //VideoCapture cap(0);
+  //Ye webcam ko open karta hai. 0 default camera ka index hai.
+  //Agar aapke system me multiple cameras hain, 1, 2 etc.use kar sakte hain.
+    VideoCapture cap(0);
+
+  
+     // Check karta hai ki camera sahi se open hua ya nahi.
+     // Agar camera nahi khula, program terminate ho jata hai.
+    if (!cap.isOpened()) {
+        printf("Camera not opened!");
+        return -1;
+    }
+
+
+ //     Mat = Matrix
+    //  Ye ek 2D ya 3D array hota hai jisme image ka data store hota hai.
+   //   Har element ek pixel ko represent karta hai.
+
+
+  //frame → webcam se captured image.
+   //   hsv → BGR frame ko HSV format me convert karne ke liye.
+      //mask1, mask2, mask → red color detection ke liye binary masks.
+
+
+    Mat frame, hsv, mask1, mask2, mask;
+
+    while (true) {
+
+        //Webcam se ek frame capture karke frame me store karta hai.
+
+        cap >> frame;
+
+        if (frame.empty()) break;
+
+        // Center text position
+        int y = frame.rows / 2;
+
+
+      //Frame par text draw karta hai :
+
+     // "Hello Gaurav" → text
+       //   Point(10, y) → text ka start position(x = 10, y = center)
+       //   FONT_HERSHEY_SIMPLEX → font style
+       //   1 → font scale
+        //  Scalar(255, 0, 0) → blue color(BGR format)
+        //  2 → thickness
+
+
+        // 🔵 Text on frame
+        putText(frame, "Hello Gaurav", Point(10, y),
+            FONT_HERSHEY_SIMPLEX, 1, Scalar(255, 0, 0), 2);
+
+
+    //  Frame ko BGR → HSV format me convert karta hai.
+       //   HSV color detection me jyada accurate hota hai.
+
+        // BGR → HSV
+        cvtColor(frame, hsv, COLOR_BGR2HSV);
+
+        // 🔴 Red color (2 ranges)
+        Scalar lower1(0, 120, 70);
+        Scalar upper1(10, 255, 255);
+
+        Scalar lower2(170, 120, 70);
+        Scalar upper2(180, 255, 255);
+
+      //inRange(hsv, lower1, upper1, mask1);
+      //inRange(hsv, lower2, upper2, mask2);
+
+     // mask = mask1 + mask2;
+
+        // Show
+        imshow("Original", frame);
+     ///imshow("Mask", mask);
+
+        if (waitKey(1) == 27) break; // ESC
+    }
+
+    cap.release();
+    destroyAllWindows();
+
+    return 0;
+}
