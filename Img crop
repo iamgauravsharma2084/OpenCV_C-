@@ -1,0 +1,26 @@
+#include <opencv2/opencv.hpp>
+using namespace cv;
+
+void cropImage(const std::string& path) {
+
+    Mat img = imread(path);
+
+    if (img.empty()) {
+        printf("Image not found!");
+        return;
+    }
+
+    // Crop area (x, y, width, height)
+    Rect roi(50, 50, 300, 300);
+
+    Mat cropped = img(roi);
+
+    namedWindow("Crop", WINDOW_NORMAL);
+    resizeWindow("Crop", 500, 400);
+
+
+    imshow("Original", img);
+    imshow("Cropped", cropped);
+
+    waitKey(0);
+}
