@@ -1,0 +1,59 @@
+#include <opencv2/opencv.hpp>
+using namespace cv;
+
+void processImage(const std::string& path) {
+    Mat img = imread(path);
+
+    if (img.empty()) {
+        printf("Image not found!");
+        return;
+    }
+
+
+    int y = img.rows / 2;
+
+    putText(img, "Hello Gaurav", Point(10, y),
+        FONT_HERSHEY_SIMPLEX, 2, Scalar(255, 0, 0), 6);
+
+
+    // Gray
+    Mat gray;
+    cvtColor(img, gray, COLOR_BGR2GRAY);
+
+    // Blur
+    Mat blurImg;
+    GaussianBlur(img, blurImg, Size(15, 15), 0);
+
+    // Edge
+    Mat edges;
+    Canny(img, edges, 100, 200);
+
+    // Window setup (important)
+    namedWindow("Original", WINDOW_NORMAL);
+    resizeWindow("Original", 400, 300);
+
+    namedWindow("Gray", WINDOW_NORMAL);
+    resizeWindow("Gray", 400, 300);
+
+    namedWindow("Blur", WINDOW_NORMAL);
+    resizeWindow("Blur", 800, 500);
+
+    namedWindow("Edges", WINDOW_NORMAL);
+    resizeWindow("Edges", 400, 300);
+
+    // Show
+    imshow("Original", img);
+    imshow("Gray", gray);
+    imshow("Blur", blurImg);
+    imshow("Edges", edges);
+
+    waitKey(0);
+}
+
+
+
+
+int main() {
+    processImage("C:/Users/Gaurav/Downloads/virat-kohli--23418.jpg");
+    return 0;
+}
