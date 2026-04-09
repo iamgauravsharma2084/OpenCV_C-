@@ -1,0 +1,41 @@
+#include <opencv2/opencv.hpp>
+#include <iostream>
+using namespace cv;
+using namespace std;
+
+//// Function to capture and save image
+void captureImage(VideoCapture& cap, const string& savePath)
+{
+    Mat frame;
+    while (true)
+    {
+        cap >> frame;
+        if (frame.empty()) break;
+
+        // Show live camera
+        imshow("Webcam", frame);
+
+        char key = (char)waitKey(1);
+        if (key == 27) // ESC
+            break;
+        else if (key == ' ') // SPACE = click/save
+        {
+            imwrite(savePath, frame);
+            cout << "Image saved to: " << savePath << endl;
+        }
+    }
+}
+
+int main()
+{
+    VideoCapture cap(0);
+    if (!cap.isOpened())
+    {
+        cout << "Camera not opened!" << endl;
+        return -1;
+    }
+    // Option 2: Forward slashes (C++ accepts this)
+    captureImage(cap, "C:/Users/Gaurav/Downloads/captured_image.jpg");
+    cap.release();
+    destroyAllWindows();
+   
