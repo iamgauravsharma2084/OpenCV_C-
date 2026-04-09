@@ -1,0 +1,25 @@
+#include <opencv2/opencv.hpp>
+using namespace cv;
+
+// function
+void showImage(const std::string& path)
+{
+    Mat img = imread(path);
+
+    if (img.empty()) {
+        printf("Image not found!");
+        return;
+    }
+
+    // window resize enable
+    namedWindow("My Image", WINDOW_NORMAL);
+    resizeWindow("My Image", 800, 400);
+
+    imshow("My Image", img);
+    waitKey(0);
+}
+
+int main() {
+    showImage("C:/Users/Gaurav/Downloads/virat-kohli--23418.jpg");
+    return 0;
+}
