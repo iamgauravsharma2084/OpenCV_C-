@@ -1,0 +1,53 @@
+#include <opencv2/opencv.hpp>
+using namespace cv;
+
+void zoomWithKeyboard(const std::string& path) {
+
+    Mat img = imread(path);
+
+    if (img.empty()) {
+        printf("Image not found!");
+        return;
+    }
+
+    double scale = 1.0;
+
+    namedWindow("Zoom Control", WINDOW_NORMAL); // resize allowed
+
+    while (true) {
+
+        Mat zoomImg;
+        resize(img, zoomImg, Size(), scale, scale);
+
+        // Text
+        putText(zoomImg, "Press + / - | ESC",
+            Point(20, 30), FONT_HERSHEY_SIMPLEX, 0.7,
+            Scalar(0, 255, 0), 2);
+
+        // 👉 Window को image के हिसाब से resize करो
+        resizeWindow("Zoom Control", zoomImg.cols, zoomImg.rows);
+
+        imshow("Zoom Control", zoomImg);
+
+        int key = waitKey(0);
+
+        if (key == 27) break;
+
+        else if (key == '+' || key == '=') {
+            scale += 0.1;
+        }
+        else if (key == '-') {
+            scale -= 0.1;
+            if (scale < 0.1) scale = 0.1;
+        }
+    }
+
+    destroyAllWindows();
+}
+
+int main() {
+
+    zoomWithKeyboard("C:/Users/Gaurav/Downloads/virat-kohli--23418.jpg");
+    return 0;
+}
+
