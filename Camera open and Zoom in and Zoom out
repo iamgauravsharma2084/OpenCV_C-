@@ -1,0 +1,71 @@
+void captureImage(VideoCapture& cap, const string& savePath)
+{
+    Mat frame;
+    double zoom = 3.0; // Initial zoom factor
+
+    while (true)
+    {
+        cap >> frame;
+        if (frame.empty()) break;
+
+        Mat display;
+        // Zoom effect: resize frame
+        if (zoom != 1.0)
+        {
+            // Resize
+            resize(frame, display, Size(), zoom, zoom);
+
+            // Center crop to original frame size
+            int cx = display.cols / 2;
+            int cy = display.rows / 2;
+            int w = frame.cols;
+            int h = frame.rows;
+
+            int x1 = max(0, cx - w / 2);
+            int y1 = max(0, cy - h / 2);
+            Rect roi(x1, y1, min(w, display.cols - x1), min(h, display.rows - y1));
+            display = display(roi);
+        }
+        else
+        {
+            display = frame;
+        }
+
+        imshow("Webcam (Use +/- to Zoom, Space to Save)", display);
+
+        char key = (char)waitKey(1);
+        if (key == 27) // ESC
+            break;
+        else if (key == ' ') // SPACE = click/save
+        {
+            imwrite(savePath, frame); // Save original frame
+            cout << "Image saved to: " << savePath << endl;
+        }
+        else if (key == '+') // Zoom in
+        {
+            zoom += 0.1;
+            if (zoom > 3.0) zoom = 3.0; // max zoom
+        }
+        else if (key == '-') // Zoom out
+        {
+            zoom -= 0.1;
+            if (zoom < 1.0) zoom = 1.0; // min zoom = original size
+        }
+    }
+}
+
+int main()
+{
+    VideoCapture cap(0);
+    if (!cap.isOpened())
+    {
+        cout << "Camera not opened!" << endl;
+        return -1;
+    }
+
+    captureImage(cap, "C:/Users/Gaurav/Downloads/captured_image.jpg");
+
+    cap.release();
+    destroyAllWindows();
+    return 0;
+}
