@@ -1,0 +1,55 @@
+#include <opencv2/opencv.hpp>
+using namespace cv;
+
+Mat img, temp;
+Point pt1, pt2;
+bool drawing = false;
+
+// Mouse callback function
+void mouseHandler(int event, int x, int y, int flags, void* userdata) {
+
+    if (event == EVENT_LBUTTONDOWN) {
+        drawing = true;
+        pt1 = Point(x, y);
+        pt2 = pt1;
+    }
+    else if (event == EVENT_MOUSEMOVE && drawing) {
+        pt2 = Point(x, y);
+        temp = img.clone();
+
+        rectangle(temp, pt1, pt2, Scalar(0, 255, 0), 2);
+        imshow("Image", temp);
+    }
+    else if (event == EVENT_LBUTTONUP) {
+        drawing = false;
+        pt2 = Point(x, y);
+
+        rectangle(img, pt1, pt2, Scalar(0, 255, 0), 2);
+        imshow("Image", img);
+
+        // Crop logic
+        Rect roi(pt1, pt2);
+        Mat cropped = img(roi);
+
+        imshow("Cropped", cropped);
+    }
+}
+
+void dragCrop(const std::string& path) {
+
+    img = imread(path);
+
+    if (img.empty()) {
+        printf("Image not found!");
+        return;
+    }
+
+    namedWindow("Image", WINDOW_NORMAL);
+    resizeWindow("Image", 800, 600);
+
+    setMouseCallback("Image", mouseHandler);
+
+    imshow("Image", img);
+
+    waitKey(0);
+}
