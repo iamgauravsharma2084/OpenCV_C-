@@ -1,0 +1,29 @@
+#include <opencv2/opencv.hpp>
+using namespace cv;
+
+void rotateImage(const std::string& path) {
+
+    Mat img = imread(path);
+
+    if (img.empty()) {
+        printf("Image not found!");
+        return;
+    }
+
+    // Rotate
+    Mat rotated;
+    rotate(img, rotated, ROTATE_90_CLOCKWISE);
+
+    // Window setup (Correct names)
+    namedWindow("Original", WINDOW_NORMAL);
+    resizeWindow("Original", 500, 400);
+
+    namedWindow("Rotated", WINDOW_NORMAL);
+    resizeWindow("Rotated", 500, 400);
+
+    // Show
+    imshow("Original", img);
+    imshow("Rotated", rotated);
+
+    waitKey(0);
+}
